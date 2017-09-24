@@ -1,2 +1,2 @@
 # DiceRollerGame
-Practice for TypeScript and React
+Still under coding...
