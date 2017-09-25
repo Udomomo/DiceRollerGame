@@ -1,13 +1,25 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
-interface DiceProps {
-    className: string;
-    dicePips: string;
-    id: string;
+interface IndexProps {}
+
+interface IndexState {
+    rolling: boolean;
 }
 
-class Index extends React.Component {
+class Index extends React.Component<IndexProps, IndexState> {
+    constructor(props: IndexProps) {
+        super(props);
+        this.state = {
+            rolling: false
+        }
+        this.buttonClick = this.buttonClick.bind(this);
+    }
+    buttonClick(): void {
+        this.setState({
+            rolling: true
+        })
+    }
     render() {
         return (
             <div>
@@ -30,12 +42,18 @@ class Index extends React.Component {
                     <Dice className="dice" dicePips='&#9856;' id='cb15'/>
                 </div>
                 <div id = "menu">
-                    <Button />
+                    <Button buttonClick = {this.buttonClick} rolling = {this.state.rolling}/>
                     <Score />
                 </div>
             </div>
         );
     }
+}
+
+interface DiceProps {
+    className: string;
+    dicePips: string;
+    id: string;
 }
 
 const Dice: React.StatelessComponent<DiceProps> = (props) => {
@@ -47,9 +65,14 @@ const Dice: React.StatelessComponent<DiceProps> = (props) => {
     );
 }
 
-const Button: React.StatelessComponent = () => {
+interface ButtonProps {
+    buttonClick(): void;
+    rolling: boolean;
+}
+
+const Button: React.StatelessComponent<ButtonProps> = (props) => {
     return (
-        <div id="button">
+        <div id="button" className={props.rolling ? "inactive" : ""} onClick={props.buttonClick}>
             <span id="label">Roll</span>
         </div>
     );
