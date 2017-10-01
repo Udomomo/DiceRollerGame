@@ -28,7 +28,7 @@ class Index extends React.Component<IndexProps, IndexState> {
         this.runSlot();
     }
     runSlot(): void {
-        let counter = 0;
+        let counter: number = 0;
         this.timerId = setInterval(
             () => {
                 this.randomDicePips();
@@ -41,12 +41,12 @@ class Index extends React.Component<IndexProps, IndexState> {
         );
     }
     randomDicePips(): void {
-        let newArray: Array<string> = new Array(16)
-        for(let i=0; i<16; i++) {
-            newArray[i] = Index.pipsList[Math.floor(Math.random() * Index.pipsList.length)];
+        let nextPips: Array<string> = new Array;
+        for (let i=0; i<16; i++) {
+            nextPips.push(Index.pipsList[Math.floor(Math.random() * Index.pipsList.length)]);
         }
         this.setState({
-            dicePip: newArray
+            dicePip: nextPips
         }) 
     }
     stopSlot(): void {
@@ -55,25 +55,16 @@ class Index extends React.Component<IndexProps, IndexState> {
         });
     }
     render() {
+        let diceElements: Array<JSX.Element> = new Array;
+        for (let i=0; i<16; i++) {
+            diceElements.push(
+                <Dice className="dice" dicePips={this.state.dicePip[i]} id={'cb' + String(i)} rolling = {this.state.rolling}/>
+            );
+        }
         return (
             <div>
                 <div id="container">
-                    <Dice className="dice" dicePips={this.state.dicePip[0]} id='cb0' rolling = {this.state.rolling}/>
-                    <Dice className="dice" dicePips={this.state.dicePip[1]} id='cb1' rolling = {this.state.rolling}/>
-                    <Dice className="dice" dicePips={this.state.dicePip[2]} id='cb2' rolling = {this.state.rolling}/>
-                    <Dice className="dice" dicePips={this.state.dicePip[3]} id='cb3' rolling = {this.state.rolling}/>
-                    <Dice className="dice" dicePips={this.state.dicePip[4]} id='cb4' rolling = {this.state.rolling}/>
-                    <Dice className="dice" dicePips={this.state.dicePip[5]} id='cb5' rolling = {this.state.rolling}/>
-                    <Dice className="dice" dicePips={this.state.dicePip[6]} id='cb6' rolling = {this.state.rolling}/>
-                    <Dice className="dice" dicePips={this.state.dicePip[7]} id='cb7' rolling = {this.state.rolling}/>
-                    <Dice className="dice" dicePips={this.state.dicePip[8]} id='cb8' rolling = {this.state.rolling}/>
-                    <Dice className="dice" dicePips={this.state.dicePip[9]} id='cb9' rolling = {this.state.rolling}/>
-                    <Dice className="dice" dicePips={this.state.dicePip[10]} id='cb10' rolling = {this.state.rolling}/>
-                    <Dice className="dice" dicePips={this.state.dicePip[11]} id='cb11' rolling = {this.state.rolling}/>
-                    <Dice className="dice" dicePips={this.state.dicePip[12]} id='cb12' rolling = {this.state.rolling}/>
-                    <Dice className="dice" dicePips={this.state.dicePip[13]} id='cb13' rolling = {this.state.rolling}/>
-                    <Dice className="dice" dicePips={this.state.dicePip[14]} id='cb14' rolling = {this.state.rolling}/>
-                    <Dice className="dice" dicePips={this.state.dicePip[15]} id='cb15' rolling = {this.state.rolling}/>
+                    {diceElements}
                 </div>
                 <div id = "menu">
                     <Button buttonClick = {this.buttonClick} rolling = {this.state.rolling}/>
