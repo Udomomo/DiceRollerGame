@@ -7,6 +7,7 @@ interface IndexProps {
 interface IndexState {
     rolling: boolean;
     dicePip: Array<string>;
+    disabled: boolean
 }
 
 class Index extends React.Component<IndexProps, IndexState> {
@@ -16,14 +17,16 @@ class Index extends React.Component<IndexProps, IndexState> {
         this.state = {
             rolling: false,
             dicePip: ['\u2680', '\u2680', '\u2680', '\u2680', '\u2680', '\u2680', '\u2680', '\u2680', 
-                      '\u2680', '\u2680', '\u2680', '\u2680', '\u2680', '\u2680', '\u2680', '\u2680']
+                      '\u2680', '\u2680', '\u2680', '\u2680', '\u2680', '\u2680', '\u2680', '\u2680'],
+            disabled: false
         }
         this.buttonClick = this.buttonClick.bind(this);
     }
     static pipsList = ['\u2680', '\u2681', '\u2682', '\u2683', '\u2684', '\u2685'];
     buttonClick(): void {
         this.setState({
-            rolling: true
+            rolling: true,
+            disabled: true
         });
         this.runSlot();
     }
@@ -51,14 +54,15 @@ class Index extends React.Component<IndexProps, IndexState> {
     }
     stopSlot(): void {
         this.setState({
-            rolling: false
+            rolling: false,
+            disabled: false
         });
     }
     render() {
         let diceElements: Array<JSX.Element> = new Array;
         for (let i=0; i<16; i++) {
             diceElements.push(
-                <Dice className="dice" dicePips={this.state.dicePip[i]} id={'cb' + String(i)} rolling = {this.state.rolling}/>
+                <Dice className="dice" dicePips={this.state.dicePip[i]} id={'cb' + String(i)} rolling = {this.state.rolling} disabled={this.state.disabled}/>
             );
         }
         return (
@@ -80,18 +84,32 @@ interface DiceProps {
     dicePips: string;
     id: string;
     rolling: boolean;
+    disabled: boolean
+}
+
+interface DiceState {
+    checked: boolean
 }
 
 class Dice extends React.Component<DiceProps> {
     constructor (props: DiceProps) {
         super(props);
+        this.state = {
+            checked: false
+        };
+        this.checkboxClick = this.checkboxClick.bind(this);
+    }
+    checkboxClick(): void {
+        this.setState((prevState: DiceState) => ({
+            checked: !prevState.checked
+        }));
     }
 
     render() {
         return (
             <div className='panel'>
                 <div className={this.props.className}>{this.props.dicePips}</div>
-                <div className="hold"><input type="checkbox" id={this.props.id} disabled /><label htmlFor={this.props.id}>Hold</label></div>
+                <div className="hold"><input type="checkbox" id={this.props.id} disabled={this.props.disabled} onClick={this.checkboxClick}/><label htmlFor={this.props.id}>Hold</label></div>
             </div>
         );
     }
