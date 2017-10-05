@@ -46,7 +46,15 @@ class Index extends React.Component<IndexProps, IndexState> {
     randomDicePips(): void {
         let nextPips: Array<string> = new Array;
         for (let i=0; i<16; i++) {
-            nextPips.push(Index.pipsList[Math.floor(Math.random() * Index.pipsList.length)]);
+            let checkbox: HTMLInputElement = document.getElementById('cb' + i) as HTMLInputElement;
+            let pip: string;
+            if (checkbox.checked) {
+                pip = this.state.dicePip[i];
+            }
+            else {
+                pip = Index.pipsList[Math.floor(Math.random() * Index.pipsList.length)];
+            }
+            nextPips.push(pip);
         }
         this.setState({
             dicePip: nextPips
