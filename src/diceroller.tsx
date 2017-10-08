@@ -1,13 +1,15 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
+import {DiceConst} from './DiceConst';
 
 interface IndexProps {
 }
 
 interface IndexState {
     rolling: boolean;
-    dicePip: Array<string>;
-    disabled: boolean
+    dicePip: string[];
+    disabled: boolean;
+    totalScore: number;
 }
 
 class Index extends React.Component<IndexProps, IndexState> {
@@ -16,9 +18,10 @@ class Index extends React.Component<IndexProps, IndexState> {
         super(props);
         this.state = {
             rolling: false,
-            dicePip: ['\u2680', '\u2680', '\u2680', '\u2680', '\u2680', '\u2680', '\u2680', '\u2680', 
+            dicePip: ['\u2680', '\u2680', '\u2680', '\u2680', '\u2680', '\u2680', '\u2680', '\u2680',
                       '\u2680', '\u2680', '\u2680', '\u2680', '\u2680', '\u2680', '\u2680', '\u2680'],
-            disabled: false
+            disabled: false,
+            totalScore: 0
         }
         this.buttonClick = this.buttonClick.bind(this);
     }
@@ -31,7 +34,7 @@ class Index extends React.Component<IndexProps, IndexState> {
         this.runSlot();
     }
     runSlot(): void {
-        let counter: number = 0;
+        let counter = 0;
         this.timerId = setInterval(
             () => {
                 this.randomDicePips();
@@ -39,13 +42,14 @@ class Index extends React.Component<IndexProps, IndexState> {
                 if (counter >= 20) {
                     clearInterval(this.timerId);
                     this.stopSlot();
+                    this.calculateScore();
                 }
             }, 50
         );
     }
     randomDicePips(): void {
-        let nextPips: Array<string> = new Array;
-        for (let i=0; i<16; i++) {
+        let nextPips: string[] = new Array;
+        for (let i=0; i<DiceConst.DICENUM; i++) {
             let checkbox: HTMLInputElement = document.getElementById('cb' + i) as HTMLInputElement;
             let pip: string;
             if (checkbox.checked) {
@@ -66,9 +70,18 @@ class Index extends React.Component<IndexProps, IndexState> {
             disabled: false
         });
     }
+    calculateScore(): void {
+        let score = 0;
+        for (let i=0; i<16; i++) {
+            score += Index.pipsList.indexOf(this.state.dicePip[i]) + 1;
+        }
+        this.setState({
+            totalScore: score
+        })
+    }
     render() {
         let diceElements: Array<JSX.Element> = new Array;
-        for (let i=0; i<16; i++) {
+        for (let i=0; i<DiceConst.DICENUM; i++) {
             diceElements.push(
                 <Dice className="dice" dicePips={this.state.dicePip[i]} id={'cb' + String(i)} rolling = {this.state.rolling} disabled={this.state.disabled}/>
             );
@@ -80,7 +93,7 @@ class Index extends React.Component<IndexProps, IndexState> {
                 </div>
                 <div id = "menu">
                     <Button buttonClick = {this.buttonClick} rolling = {this.state.rolling}/>
-                    <Score />
+                    <Score totalScore = {this.state.totalScore}/>
                 </div>
             </div>
         );
@@ -136,11 +149,15 @@ const Button: React.StatelessComponent<ButtonProps> = (props) => {
     );
 }
 
-const Score: React.StatelessComponent = () => {
+interface ScoreProps {
+    totalScore: number
+}
+
+const Score: React.StatelessComponent<ScoreProps> = (props) => {
     return (
         <div id="score">
-            <div className="total">total: <span id="totalnum">0</span></div>
-            <div className="goal">goal: <span id="goalnum">0</span></div>
+            <div className="total">total: <span id="totalnum">{props.totalScore}</span></div>
+            <div className="goal">goal: <span id="goalnum">{DiceConst.GOALSCORE}</span></div>
         </div>
     );
 }
