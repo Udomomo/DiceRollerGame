@@ -10,6 +10,8 @@ interface IndexState {
     dicePip: string[];
     disabled: boolean;
     totalScore: number;
+    scoreDiff: number;
+    matched: boolean
 }
 
 class Index extends React.Component<IndexProps, IndexState> {
@@ -21,7 +23,9 @@ class Index extends React.Component<IndexProps, IndexState> {
             dicePip: ['\u2680', '\u2680', '\u2680', '\u2680', '\u2680', '\u2680', '\u2680', '\u2680',
                       '\u2680', '\u2680', '\u2680', '\u2680', '\u2680', '\u2680', '\u2680', '\u2680'],
             disabled: false,
-            totalScore: 0
+            totalScore: 0,
+            scoreDiff: 0 - DiceConst.GOALSCORE,
+            matched: false
         }
         this.buttonClick = this.buttonClick.bind(this);
     }
@@ -75,8 +79,10 @@ class Index extends React.Component<IndexProps, IndexState> {
         for (let i=0; i<16; i++) {
             score += Index.pipsList.indexOf(this.state.dicePip[i]) + 1;
         }
+        let scoreDiff = score - DiceConst.GOALSCORE;
         this.setState({
-            totalScore: score
+            totalScore: score,
+            scoreDiff: scoreDiff
         })
     }
     render() {
@@ -92,8 +98,8 @@ class Index extends React.Component<IndexProps, IndexState> {
                     {diceElements}
                 </div>
                 <div id = "menu">
-                    <Button buttonClick = {this.buttonClick} rolling = {this.state.rolling}/>
-                    <Score totalScore = {this.state.totalScore}/>
+                    <Button buttonClick = {this.buttonClick} rolling = {this.state.rolling} matched = {this.state.scoreDiff === 0 ? true: false}/>
+                    <Score totalScore = {this.state.totalScore} matched = {this.state.scoreDiff === 0 ? true: false}/>
                 </div>
             </div>
         );
@@ -139,23 +145,39 @@ class Dice extends React.Component<DiceProps> {
 interface ButtonProps {
     buttonClick(): void;
     rolling: boolean;
+    matched: boolean;
 }
 
 const Button: React.StatelessComponent<ButtonProps> = (props) => {
+    let button = null;
+    if (props.matched) {
+        return ( 
+            <div id="button" className="inactive">
+            <span id="label">You Win!</span>
+            </div>
+        );
+    } else if (props.rolling) {
+        return (
+            <div id="button" className="inactive">
+            <span id="label">Roll</span>
+            </div>
+        );
+    }
     return (
-        <div id="button" className={props.rolling ? "inactive" : ""} onClick={props.buttonClick}>
+        <div id="button" onClick={props.buttonClick}>
             <span id="label">Roll</span>
         </div>
     );
 }
 
 interface ScoreProps {
-    totalScore: number
+    totalScore: number;
+    matched: boolean;
 }
 
 const Score: React.StatelessComponent<ScoreProps> = (props) => {
     return (
-        <div id="score">
+        <div id="score" className={props.matched ? "win" : ""}>
             <div className="total">total: <span id="totalnum">{props.totalScore}</span></div>
             <div className="goal">goal: <span id="goalnum">{DiceConst.GOALSCORE}</span></div>
         </div>
